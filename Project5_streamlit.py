@@ -19,12 +19,20 @@ warnings.filterwarnings("ignore")
 
 data = pd.read_csv(r"C:\Users\Shinemet\Ironhack\Projects\Project5\Work files\heart.csv")
 
+##################### Layout #########################
+
+st.set_page_config(layout="wide")
+
+st.markdown("## Heart Disease Dataset Analysis")   ## Main Title
+
 
 ############ Common references ############
 
-
+# continuous features
 measurements = ['trestbps', 'chol', 'thalach']
 
+# categorical features
+categories = ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'ca', 'thal', 'target']
 
 ################# Dynamic scatter plot #################
 
@@ -34,7 +42,7 @@ x_axis = st.sidebar.selectbox("X-Axis", measurements)
 y_axis = st.sidebar.selectbox("Y-Axis", measurements, index=1)
 
 if x_axis and y_axis:
-    scatter_fig = plt.figure(figsize=(6,4))
+    scatter_fig = plt.figure(figsize=(12,8))
 
     scatter_ax = scatter_fig.add_subplot(111)
 
@@ -46,19 +54,29 @@ if x_axis and y_axis:
                            title="{} vs {}".format(x_axis.capitalize(), y_axis.capitalize()), label="Low risk of heart attack");
 
 
-########## Thalac and CA bar plot ##################
+########################### Dynamic Pie Chart ###########################
 
 
-gp_ca = data.groupby(['restecg'])['thalach'].mean()
+st.sidebar.markdown("### Patients Split by Categorical Features (Pie Chart)")
 
-bar_fig = plt.figure(figsize=(6,4))
+data_cat = data[['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'ca', 'thal', 'target']]
+pie_axis = st.sidebar.selectbox(label='Patients Split by Feature', options=categories)
 
-bar_ax = bar_fig.add_subplot(111)
+colors = sns.color_palette('coolwarm')
 
-gp_ca.plot.bar(alpha=0.8, ax=bar_ax, color='r', 
-               title='Average Max Heart Rate by Resting ECG', 
-               rot=0);
-bar_ax.set_xlabel('resting ECG results from low to high')
+if pie_axis:
+    pie_fig = plt.figure(figsize=(2,2))
+
+    pie_ax = pie_fig.add_subplot(111)
+
+    sub_data_cat = data_cat[pie_axis]
+
+    pie_ax.pie(data_cat[pie_axis].value_counts(), startangle=90, #cmap='plasma', ax=pie_ax, 
+                       autopct='%.1f', colors=colors, textprops={'fontsize': 4}
+                       )
+    
+    pie_ax.set_title("Blood Measurements by Age", fontsize=4);
+
 
 
 ################ Dynamic Bar Chart ##################
@@ -72,7 +90,7 @@ bar_axis = st.sidebar.multiselect(label="Average Measures for High and Low Risk 
                                   default=measurements)
 
 if bar_axis:
-    bar_fig = plt.figure(figsize=(6,4))
+    bar_fig = plt.figure(figsize=(12,8))
 
     bar_ax = bar_fig.add_subplot(111)
 
@@ -85,12 +103,12 @@ if bar_axis:
     labels[0] = 'Low'
     labels[1] = 'High'
     bar_ax.set_xticklabels(labels)
-    bar_ax.set_xlabel('Risk of Heart Attack');
-    bar_ax.legend(loc='upper right')
+    bar_ax.set_xlabel('Risk of Heart Attack')
+    bar_ax.legend(loc='upper right');
 
 
 else:
-    bar_fig = plt.figure(figsize=(6,4))
+    bar_fig = plt.figure(figsize=(12,8))
 
     bar_ax = bar_fig.add_subplot(111)
 
@@ -106,9 +124,9 @@ else:
     labels = [item.get_text() for item in bar_ax.get_xticklabels()]
     labels[0] = 'Low'
     labels[1] = 'High'
-    bar_ax.set_xticklabels(labels);
-    bar_ax.set_xlabel('Risk of Heart Attack');
-    bar_ax.legend(loc='upper right')
+    bar_ax.set_xticklabels(labels)
+    bar_ax.set_xlabel('Risk of Heart Attack')
+    bar_ax.legend(loc='upper right');
 
 
 ################# Histogram Logic ########################
@@ -120,7 +138,7 @@ hist_axis = st.sidebar.multiselect(label="Histogram Ingredient", options=measure
 bins = st.sidebar.radio(label="Bins :", options=[10,50,100], index=2)
 
 if hist_axis:
-    hist_fig = plt.figure(figsize=(6,4))
+    hist_fig = plt.figure(figsize=(12,8))
 
     hist_ax = hist_fig.add_subplot(111)
 
@@ -128,11 +146,11 @@ if hist_axis:
 
     sub_data.plot.hist(bins=bins, alpha=0.7, ax=hist_ax, 
                        title="Distribution of Blood Measurements",
-                       cmap='plasma');
-    hist_ax.legend(loc='upper right')
+                       cmap='plasma')
+    hist_ax.legend(loc='upper right');
     
 else:
-    hist_fig = plt.figure(figsize=(6,4))
+    hist_fig = plt.figure(figsize=(12,8))
 
     hist_ax = hist_fig.add_subplot(111)
 
@@ -140,8 +158,8 @@ else:
 
     sub_data.plot.hist(bins=bins, alpha=0.7, ax=hist_ax, 
                        title="Distribution of Blood Measurements",
-                       cmap='plasma');
-    hist_ax.legend(loc='upper right')
+                       cmap='plasma')
+    hist_ax.legend(loc='upper right');
 
 
 #################### Dynamic Bar Chart ##################################
@@ -153,7 +171,7 @@ bar2_axis = st.sidebar.multiselect(label='Blood Measurements by Chest Pain Type'
                                  options=measurements, default=measurements)
 
 if bar2_axis:
-    bar2_fig = plt.figure(figsize=(6,4))
+    bar2_fig = plt.figure(figsize=(12,8))
 
     bar2_ax = bar2_fig.add_subplot(111)
 
@@ -162,12 +180,12 @@ if bar2_axis:
     sub_gp_target.plot.bar(alpha=0.8, cmap='plasma',
                        ax=bar2_ax, title="Blood Measurements by Chest Pain Type", rot=0)
     
-    bar2_ax.set_xlabel('Chest Pain Type');
-    bar2_ax.legend(loc='upper right')
+    bar2_ax.set_xlabel('Chest Pain Type')
+    bar2_ax.legend(loc='upper right');
 
 
 else:
-    bar2_fig = plt.figure(figsize=(6,4))
+    bar2_fig = plt.figure(figsize=(12,8))
 
     bar2_ax = bar2_fig.add_subplot(111)
 
@@ -176,8 +194,8 @@ else:
     sub_gp_target.plot.bar(alpha=0.8, cmap='plasma',
                        ax=bar2_ax, title="Blood Measurements by Chest Pain Type", rot=0)
     
-    bar2_ax.set_xlabel('Chest Pain Type');
-    bar2_ax.legend(loc='upper right')
+    bar2_ax.set_xlabel('Chest Pain Type')
+    bar2_ax.legend(loc='upper right');
 
 
 #################### Dynamic Line Chart ##################################
@@ -189,7 +207,7 @@ line_axis = st.sidebar.multiselect(label='Blood Measurements by Age',
                                  options=measurements, default=measurements)
 
 if line_axis:
-    line_fig = plt.figure(figsize=(6,4))
+    line_fig = plt.figure(figsize=(12,8))
 
     line_ax = line_fig.add_subplot(111)
 
@@ -198,12 +216,12 @@ if line_axis:
     sub_gp_target.plot(alpha=0.8, cmap='plasma',
                        ax=line_ax, title="Blood Measurements by Age", rot=0)
     
-    line_ax.set_xlabel('Age');
-    line_ax.legend(loc='upper right')
+    line_ax.set_xlabel('Age')
+    line_ax.legend(loc='upper right');
 
 
 else:
-    line_fig = plt.figure(figsize=(6,4))
+    line_fig = plt.figure(figsize=(12,8))
 
     line_ax = line_fig.add_subplot(111)
 
@@ -212,40 +230,71 @@ else:
     sub_gp_target.plot(alpha=0.8, cmap='plasma',
                        ax=line_ax, title="Blood Measurements by Age", rot=0)
     
-    line_ax.set_xlabel('Age');
-    line_ax.legend(loc='upper right')
+    line_ax.set_xlabel('Age')
+    line_ax.legend(loc='upper right');
 
 
-######################################################
+
+#####################################################
 
 
+########## Thalac and CA bar plot ##################
+
+
+gp_ca = data.groupby(['restecg'])['thalach'].mean()
+
+bar_fig = plt.figure(figsize=(12,8))
+
+bar_ax = bar_fig.add_subplot(111)
+
+gp_ca.plot.bar(alpha=0.8, ax=bar_ax, color='r', 
+               title='Average Max Heart Rate by Resting ECG', 
+               rot=0);
+bar_ax.set_xlabel('resting ECG results from low to high')
 
 
 ##################### Layout Application ##################
 
 container1 = st.container()
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with container1:
     with col1:
         scatter_fig
-    #with col2:
-        #bar2_fig
+#    with col2:
+#        pie_fig
+#    with col3:
+#        pie_fig    
 
 container2 = st.container()
-col3, col4 = st.columns(2)
+col4, col5, col6 = st.columns(3)
 
 with container2:
-    with col3:
-        hist_fig
     with col4:
+        hist_fig
+    with col5:
         bar2_fig
+#    with col6:
+#        bar2_fig        
         
 container3 = st.container()
-col5, col6 = st.columns(2)
+col7, col8, col9 = st.columns(3)
 
 with container3:
-    with col5:
+    with col7:
         line_fig
-    with col6:
+    with col8:
         bar_fig
+#    with col9:
+#        bar2_fig  
+        
+container4 = st.container()
+col10, col11, col12 = st.columns(3)
+
+with container4:
+#    with col10:
+#        line_fig
+#    with col11:
+#        bar_fig
+    with col12:
+        pie_fig
